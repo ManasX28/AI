@@ -1,112 +1,75 @@
-from time import sleep
+def dfs(src,target,limit,visited_states):
+    
+    if src==target:
+        return True
+    
+    if limit<=0:
+        return False
+    
+    visited_states.append(src)
+    adj = possible_moves(src,visited_states)
+    
+    for move in adj:
+        if dfs(move,target,limit-1,visited_states):
+            return True
+    return False
 
-mapping = {}
+def possible_moves(state,visited_states): 
+    
+    ind = state.index(-1)  
+    
+    d = []
+                                        
+    if ind+3 in range(9):
+        d.append('d')
+    if ind-3 in range(9):
+        d.append('u')
+    if ind not in [0,3,6]:
+        d.append('l')
+    if ind not in [2,5,8]:
+        d.append('r')
+    
+    pos_moves = []
 
-def printBoard(board):
-    print()
-    print("----------------------- Board ----------------------------")
-    print()
-    print()
-    for i in range(3):
-        print("                     ", end="")
-        for j in range(3):
-            print(" " + str(board[i][j]) + " ", end="")
-            if j != 2:
-                print("|", end="")
-        print()
-        if i != 2:
-            print("                      __+___+__ ")
-    print()
-    print()
-    print("----------------------------------------------------------")
-
-def manhattan(board):
-    total = 0
-    for i in range(3):
-        for j in range(3):
-            if board[i][j] != -1:
-                orow, ocol = mapping[board[i][j]]
-                total += abs(orow-i) + abs(ocol-j)
-    return total
-
-def canGoUp(emptyrow):
-    return emptyrow > 0
-
-def canGoDown(emptyrow):
-    return emptyrow < 2
-
-def canGoLeft(emptycol):
-    return emptycol > 0
-
-def canGoRight(emptycol):
-    return emptycol < 2
-
-def getMovablePositions(emptyrow, emptycol):
-    positions = []
-    if canGoUp(emptyrow):
-        positions.append((emptyrow-1, emptycol))
-    if canGoDown(emptyrow):
-        positions.append((emptyrow+1, emptycol))
-    if canGoLeft(emptycol):
-        positions.append((emptyrow, emptycol-1))
-    if canGoRight(emptycol):
-        positions.append((emptyrow, emptycol+1))
-    return positions
-
-def solve(board, emptyrow, emptycol):
-    count = 0
-    while manhattan(board) != 0 and count < 101:
-        positions = getMovablePositions(emptyrow, emptycol)
-        minManhattan = 20000000
-        minMove = (-1,-1)
-        for (i, j) in positions:
-            board[i][j], board[emptyrow][emptycol] = board[emptyrow][emptycol], board[i][j]
-            dist = manhattan(board)
-            if dist <= minManhattan:
-                minManhattan = dist
-                minMove = (i, j)
-            board[i][j], board[emptyrow][emptycol] = board[emptyrow][emptycol], board[i][j]
-        if minMove == (-1,-1):
-            print("Impossible")
-            break
-        #else:
-            # printBoard(board)
-            # sleep(5)
+    for move in d:
+        pos_moves.append(gen(state,move,ind))
         
-        board[minMove[0]][minMove[1]], board[emptyrow][emptycol] = board[emptyrow][emptycol], board[minMove[0]][minMove[1]]
-        emptyrow, emptycol = minMove[0], minMove[1]
-        count += 1
+    return [move for move in pos_moves if move not in visited_states]
 
-    if count < 101:
-        print("----------------- Your required configuration has been reached!!! -----------------")
-        printBoard(board)
-    else:
-        print()
-        print("----------------- Sorry, This is not possible -----------------")
+def gen(state, m, b): 
+
+    temp = state.copy()                            
         
+    if m=='d':
+        a = temp[b+3]
+        temp[b+3]=temp[b]
+        temp[b]=a
+    elif m=='u':
+        a = temp[b-3]
+        temp[b-3]=temp[b]
+        temp[b]=a
+    elif m=='l':
+        a = temp[b-1]
+        temp[b-1]=temp[b]
+        temp[b]=a
+    elif m=='r':
+        a = temp[b+1]
+        temp[b+1]=temp[b]
+        temp[b]=a
+    
+    return temp
 
-def start():
-    board = [[0 for i in range(3)] for j in range(3)]
-    print()
-    print()
-    printBoard(board)
-    empty = int(input("Enter which position must be empty at the beginning : ")) - 1
-    board[empty // 3][empty % 3] = -1
-    print("Enter the board configuration : ")
-    for i in range(3):
-        for j in range(3):
-            if board[i][j] != -1:
-                board[i][j] = int(input("Position " + str(i*3 + j + 1) + " contains value : "))
-    print()
-    print("Initial Configuration of the board is : ")
-    printBoard(board)
-    print()
-    print("Please give the final configuration of the matrix : ")
-    #final = int(input("Which position should be empty(final) : "))
-    for i in range(1, 9):
-        pos = int(input("Position of " + str(i) + " (final) : ")) - 1
-        mapping[i] = (pos // 3, pos % 3)
-    solve(board, empty // 3, empty % 3)
+def iddfs(src,target,depth):
+    visited_states = []
+    for i in range(1, depth+1):
+        if dfs(src, target, i, visited_states): 
+            return True
+    return False
 
 
-start()
+#Test 1
+src = [1,2,3,-1,4,5,6,7,8]
+target = [1,2,3,4,-1,5,6,7,8]           
+depth = 4
+
+iddfs(src, target, depth)
