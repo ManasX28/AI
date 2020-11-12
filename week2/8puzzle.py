@@ -64,12 +64,19 @@ def iddfs(src,target,depth):
     for i in range(1, depth+1):
         if dfs(src, target, i, visited_states): 
             return True
-    return False
+    return False 
 
 
 #Test 1
 src = [1,2,3,-1,4,5,6,7,8]
-target = [1,2,3,4,-1,5,6,7,8]           
+target = [1,2,3,4,5,6,-1,7,8]           
 depth = 4
 
-iddfs(src, target, depth)
+print(iddfs(src, target, depth)) # Minimum depth should be 2
+
+# Test 2
+src1 = [1,2,3,-1,4,5,6,7,8] 
+target1=[1,2,3,6,4,5,-1,7,8]
+
+depth1 = 1
+print(iddfs(src1, target1, depth1)) # Minimum depth is 1
