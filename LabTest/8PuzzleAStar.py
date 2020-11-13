@@ -118,7 +118,6 @@ class SlidePuzzle():
             for move in successors:
                 if(move.depth > 3):
                     print("NOSOLUTION")
-                    sys.exit()
                     if len(closedlist) > 0:
                         return x.generate_solution_path([]), move_count
                     else:
